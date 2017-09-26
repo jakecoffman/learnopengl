@@ -65,8 +65,8 @@ func main() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
 	gl.BufferData(gl.ARRAY_BUFFER, 4*len(vertices), gl.Ptr(vertices), gl.STATIC_DRAW)
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, ebo)
-	gl.BufferData(gl.ARRAY_BUFFER, 4*len(indices), gl.Ptr(indices), gl.STATIC_DRAW)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, 4*len(indices), gl.Ptr(indices), gl.STATIC_DRAW)
 
 	// position
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 8*4, gl.PtrOffset(0))
@@ -104,7 +104,7 @@ func main() {
 	draw.Draw(rgba, rgba.Bounds(), img, image.Pt(0, 0), draw.Src)
 	size := rgba.Rect.Size()
 
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.SRGB, int32(size.X), int32(size.Y), 0, gl.RGB, gl.UNSIGNED_BYTE, gl.Ptr(rgba.Pix))
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.SRGB_ALPHA, int32(size.X), int32(size.Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(rgba.Pix))
 	gl.GenerateMipmap(gl.TEXTURE_2D)
 
 	f.Close()
