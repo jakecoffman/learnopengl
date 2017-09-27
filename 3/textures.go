@@ -4,10 +4,6 @@ import (
 	_ "image/jpeg"
 	"runtime"
 
-	"image"
-	"image/draw"
-	"os"
-
 	"github.com/go-gl/gl/v3.3-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/jakecoffman/learnopengl"
@@ -80,34 +76,11 @@ func main() {
 	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, 8*4, gl.PtrOffset(6*4))
 	gl.EnableVertexAttribArray(2)
 
-	// load and create a texture
-	var texture uint32
-	gl.GenTextures(1, &texture)
-	gl.BindTexture(gl.TEXTURE_2D, texture) // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-	// set the texture wrapping parameters
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
-	// set texture filtering parameters
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-
 	// load image, create texture and generate mipmaps
-	f, err := os.Open("3/container.jpg")
+	texture, err := learnopengl.NewTexture("3/container.jpg")
 	if err != nil {
 		panic(err)
 	}
-	img, _, err := image.Decode(f)
-	if err != nil {
-		panic(err)
-	}
-	rgba := image.NewRGBA(img.Bounds())
-	draw.Draw(rgba, rgba.Bounds(), img, image.Pt(0, 0), draw.Src)
-	size := rgba.Rect.Size()
-
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.SRGB_ALPHA, int32(size.X), int32(size.Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(rgba.Pix))
-	gl.GenerateMipmap(gl.TEXTURE_2D)
-
-	f.Close()
 
 	for !window.ShouldClose() {
 		processInput(window)
@@ -115,7 +88,7 @@ func main() {
 		gl.ClearColor(0.2, 0.3, 0.3, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
-		gl.BindTexture(gl.TEXTURE_2D, texture)
+		texture.Bind()
 
 		shader.Use()
 		gl.BindVertexArray(vao)
