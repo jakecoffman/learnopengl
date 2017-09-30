@@ -54,7 +54,7 @@ func (l *Level) Load(file string, lvlWidth, lvlHeight int) error {
 
 func (l *Level) Draw(renderer *SpriteRenderer) {
 	for _, tile := range l.Bricks {
-		if tile.IsSolid && !tile.Destroyed {
+		if !tile.Destroyed {
 			tile.Draw(renderer)
 		}
 	}
@@ -80,7 +80,8 @@ func (l *Level) init(tileData [][]int, lvlWidth, lvlHeight int) error {
 			if tileData[y][x] == 1 {
 				pos := Vec2(unitWidth*x, unitHeight*y)
 				size := Vec2(unitWidth, unitHeight)
-				obj := NewGameObject2(pos, size, ResourceManager.Texture("block_solid"), mgl32.Vec3{.8, .8, .7}, mgl32.Vec2{})
+				obj := NewGameObject(pos, size, ResourceManager.Texture("block_solid"))
+				obj.Color = mgl32.Vec3{.8, .8, .7}
 				obj.IsSolid = true
 				l.Bricks = append(l.Bricks, obj)
 			} else if tileData[y][x] > 1 {
@@ -98,7 +99,9 @@ func (l *Level) init(tileData [][]int, lvlWidth, lvlHeight int) error {
 
 				pos := Vec2(unitWidth*x, unitHeight*y)
 				size := Vec2(unitWidth, unitHeight)
-				l.Bricks = append(l.Bricks, NewGameObject2(pos, size, ResourceManager.Texture("block"), color, mgl32.Vec2{}))
+				obj := NewGameObject(pos, size, ResourceManager.Texture("block"))
+				obj.Color = color
+				l.Bricks = append(l.Bricks, obj)
 			}
 		}
 	}

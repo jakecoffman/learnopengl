@@ -33,7 +33,7 @@ func NewGame(width, height int) *Game {
 }
 
 var (
-	PLAYER_SIZE     = Vec2(100, 20)
+	PLAYER_SIZE     = mgl32.Vec2{100, 20}
 	PLAYER_VELOCITY = 500.0
 )
 
@@ -53,6 +53,7 @@ func (g *Game) Init() {
 	ResourceManager.LoadTexture("breakout/awesomeface.png", "face")
 	ResourceManager.LoadTexture("breakout/block.png", "block")
 	ResourceManager.LoadTexture("breakout/block_solid.png", "block_solid")
+
 	one := NewLevel()
 	if err := one.Load("breakout/level1.txt", g.Width, int(float32(g.Height)*0.5)); err != nil {
 		panic(err)
@@ -60,7 +61,7 @@ func (g *Game) Init() {
 	g.Levels = append(g.Levels, one)
 
 	playerPos := mgl32.Vec2{float32(g.Width)/2.0 - PLAYER_SIZE.X()/2.0, float32(g.Height) - PLAYER_SIZE.Y()}
-	g.Player = NewGameObject2(playerPos, PLAYER_SIZE, ResourceManager.Texture("paddle"), mgl32.Vec3{}, mgl32.Vec2{})
+	g.Player = NewGameObject(playerPos, PLAYER_SIZE, ResourceManager.Texture("paddle"))
 
 	g.state = GAME_ACTIVE
 }
