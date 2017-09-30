@@ -1,6 +1,7 @@
 package breakout
 
 import (
+	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 )
 
@@ -67,7 +68,22 @@ func (g *Game) Init() {
 }
 
 func (g *Game) ProcessInput(dt float64) {
+	if g.state != GAME_ACTIVE {
+		return
+	}
 
+	velocity := float32(PLAYER_VELOCITY * dt)
+
+	if g.Keys[glfw.KeyA] {
+		if g.Player.Position.X() >= 0 {
+			g.Player.Position = mgl32.Vec2{g.Player.Position.X() - velocity, g.Player.Position.Y()}
+		}
+	}
+	if g.Keys[glfw.KeyD] {
+		if g.Player.Position.X() <= float32(g.Width)-g.Player.Size.X() {
+			g.Player.Position = mgl32.Vec2{g.Player.Position.X() + velocity, g.Player.Position.Y()}
+		}
+	}
 }
 
 func (g *Game) Update(dt float64) {

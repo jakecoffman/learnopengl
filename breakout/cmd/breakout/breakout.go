@@ -59,14 +59,12 @@ func main() {
 		glfw.PollEvents()
 
 		Breakout.ProcessInput(deltaTime)
-
 		Breakout.Update(deltaTime)
 
 		gl.ClearColor(0, 0, 0, 0.5)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		Breakout.Render()
-
 		window.SwapBuffers()
 	}
 
