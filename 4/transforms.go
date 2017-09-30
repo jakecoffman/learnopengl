@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-gl/gl/v3.3-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
-	"github.com/jakecoffman/learnopengl"
-	"github.com/runningwild/mathgl"
+	"github.com/go-gl/mathgl/mgl32"
+	"github.com/jakecoffman/learnopengl/breakout"
 )
 
 const (
@@ -40,13 +40,16 @@ func main() {
 		panic(err)
 	}
 
-	shader := learnopengl.NewShader("4/vertex.glsl", "4/fragment.glsl")
+	shader, err := breakout.ResourceManager.LoadShader("4/vertex.glsl", "4/fragment.glsl", "shader")
+	if err != nil {
+		panic(err)
+	}
 
 	var vertices = []float32{
-		0.5,  0.5, 0.0,   1.0, 1.0, // top right
-		0.5, -0.5, 0.0,   1.0, 0.0, // bottom right
-		-0.5, -0.5, 0.0,   0.0, 0.0, // bottom left
-		-0.5,  0.5, 0.0,   0.0, 1.0,  // top left
+		0.5, 0.5, 0.0, 1.0, 1.0, // top right
+		0.5, -0.5, 0.0, 1.0, 0.0, // bottom right
+		-0.5, -0.5, 0.0, 0.0, 0.0, // bottom left
+		-0.5, 0.5, 0.0, 0.0, 1.0, // top left
 	}
 	var indices = []int32{
 		0, 1, 3,
@@ -73,18 +76,17 @@ func main() {
 	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(3*4))
 	gl.EnableVertexAttribArray(1)
 
-	// load image, create texture and generate mipmaps
-	texture1, err := learnopengl.NewTexture("3/container.jpg")
+	texture1, err := breakout.ResourceManager.LoadTexture("3/container.jpg", "container")
 	if err != nil {
 		panic(err)
 	}
-	texture2, err := learnopengl.NewTexture("4/awesomeface.png")
+	texture2, err := breakout.ResourceManager.LoadTexture("4/awesomeface.png", "face")
 	if err != nil {
 		panic(err)
 	}
-	shader.Use()
-	shader.SetInt("texture1", 0)
-	shader.SetInt("texture2", 1)
+	shader.Use().
+		SetInt("texture1", 0).
+		SetInt("texture2", 1)
 
 	for !window.ShouldClose() {
 		processInput(window)
@@ -98,9 +100,9 @@ func main() {
 		texture2.Bind()
 
 		// create transforms
-		transform := mathgl.Mat4{}
-		transform.Translation(0.5, -0.5, 0)
-		transform.RotationAxisAngle(mathgl.Vec3{0, 0, 1}, float32(glfw.GetTime()))
+		transform := mgl32.Mat4{}
+		transform = mgl32.Translate3D(0.5, -0.5, 0)
+		transform = transform.Mul4(mgl32.HomogRotate3D(float32(glfw.GetTime()), mgl32.Vec3{0, 0, 1}))
 
 		shader.Use()
 		transformLoc := gl.GetUniformLocation(shader.ID, gl.Str("transform\x00"))

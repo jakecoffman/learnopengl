@@ -50,13 +50,13 @@ func (t *Texture2D) Generate(reader io.ReadCloser) error {
 
 	// load and create a texture
 	gl.BindTexture(gl.TEXTURE_2D, t.ID) // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-	gl.TexImage2D(gl.TEXTURE_2D, 0, t.InternalFormat, int32(size.X), int32(size.Y), 0, gl.RGBA, t.ImageFormat, gl.Ptr(rgba.Pix))
 	// set the texture wrapping parameters
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, t.WrapS)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, t.WrapT)
 	// set texture filtering parameters
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, t.FilterMin)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, t.FilterMax)
+	gl.TexImage2D(gl.TEXTURE_2D, 0, t.InternalFormat, int32(size.X), int32(size.Y), 0, t.ImageFormat, gl.UNSIGNED_BYTE, gl.Ptr(rgba.Pix))
 	// unbind
 	gl.BindTexture(gl.TEXTURE_2D, 0)
 

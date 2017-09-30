@@ -1,11 +1,20 @@
 package breakout
 
-import "github.com/go-gl/mathgl/mgl32"
+import (
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type Game struct {
 	state         int
 	Keys          [1024]bool
 	Width, Height int
+
+	Levels []*Level
+	Level  int
+
+	Player *Object
+
+	renderer *SpriteRenderer
 }
 
 // Game state
@@ -23,18 +32,35 @@ func NewGame(width, height int) *Game {
 	}
 }
 
-var Renderer *SpriteRenderer
+var (
+	PLAYER_SIZE     = Vec2(100, 20)
+	PLAYER_VELOCITY = 500.0
+)
 
 func (g *Game) Init() {
 	ResourceManager.LoadShader("breakout/vertex.glsl", "breakout/fragment.glsl", "sprite")
 
 	projection := mgl32.Ortho(0, float32(g.Width), float32(g.Height), 0, -1, 1)
-	ResourceManager.Shader("sprite").Use().SetInt("image", 0)
-	ResourceManager.Shader("sprite").SetMat4("projection", projection)
+	ResourceManager.Shader("sprite").
+		Use().
+		SetInt("image", 0).
+		SetMat4("projection", projection)
 
-	Renderer = NewSpriteRenderer(ResourceManager.Shader("sprite"))
+	g.renderer = NewSpriteRenderer(ResourceManager.Shader("sprite"))
 
-	ResourceManager.LoadTexture("breakout/awesomeface.png", true, "face")
+	ResourceManager.LoadTexture("breakout/background.jpg", "background")
+	ResourceManager.LoadTexture("breakout/paddle.png", "paddle")
+	ResourceManager.LoadTexture("breakout/awesomeface.png", "face")
+	ResourceManager.LoadTexture("breakout/block.png", "block")
+	ResourceManager.LoadTexture("breakout/block_solid.png", "block_solid")
+	one := NewLevel()
+	if err := one.Load("breakout/level1.txt", g.Width, int(float32(g.Height)*0.5)); err != nil {
+		panic(err)
+	}
+	g.Levels = append(g.Levels, one)
+
+	playerPos := mgl32.Vec2{float32(g.Width)/2.0 - PLAYER_SIZE.X()/2.0, float32(g.Height) - PLAYER_SIZE.Y()}
+	g.Player = NewGameObject2(playerPos, PLAYER_SIZE, ResourceManager.Texture("paddle"), mgl32.Vec3{}, mgl32.Vec2{})
 
 	g.state = GAME_ACTIVE
 }
@@ -48,7 +74,11 @@ func (g *Game) Update(dt float64) {
 }
 
 func (g *Game) Render() {
-	Renderer.DrawSprite(ResourceManager.Texture("face"), mgl32.Vec2{200, 200}, mgl32.Vec2{300, 400}, 45, mgl32.Vec3{0, 1, 0})
+	if g.state == GAME_ACTIVE {
+		g.renderer.DrawSprite(ResourceManager.Texture("background"), Vec2(0, 0), Vec2(g.Width, g.Height), 0, DefaultColor)
+		g.Levels[g.Level].Draw(g.renderer)
+		g.Player.Draw(g.renderer)
+	}
 }
 
 func (g *Game) Pause() {

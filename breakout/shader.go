@@ -25,33 +25,38 @@ func NewShader(vertexCode, fragmentCode string) *Shader {
 	}
 }
 
-func (s Shader) Use() Shader {
+func (s *Shader) Use() *Shader {
 	gl.UseProgram(s.ID)
 	return s
 }
 
-func (s Shader) SetBool(name string, value bool) {
+func (s *Shader) SetBool(name string, value bool) *Shader {
 	if value {
 		gl.Uniform1i(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), 1)
 	} else {
 		gl.Uniform1i(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), 0)
 	}
+	return s
 }
 
-func (s Shader) SetInt(name string, value int) {
+func (s *Shader) SetInt(name string, value int) *Shader {
 	gl.Uniform1i(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), int32(value))
+	return s
 }
 
-func (s Shader) SetFloat(name string, value float64) {
+func (s *Shader) SetFloat(name string, value float64) *Shader {
 	gl.Uniform1f(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), float32(value))
+	return s
 }
 
-func (s Shader) SetVec3f(name string, value mgl32.Vec3) {
+func (s *Shader) SetVec3f(name string, value mgl32.Vec3) *Shader {
 	gl.Uniform3f(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), value.X(), value.Y(), value.Z())
+	return s
 }
 
-func (s Shader) SetMat4(name string, value mgl32.Mat4) {
+func (s *Shader) SetMat4(name string, value mgl32.Mat4) *Shader {
 	gl.UniformMatrix4fv(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), 1, false, &value[0])
+	return s
 }
 
 func CheckGLErrors() {

@@ -40,10 +40,14 @@ func (r *resourceManager) LoadShader(vertexPath, fragmentPath, name string) (*Sh
 }
 
 func (r *resourceManager) Shader(name string) *Shader {
-	return r.shaders[name]
+	shader, ok := r.shaders[name]
+	if !ok {
+		panic("Shader not found")
+	}
+	return shader
 }
 
-func (r *resourceManager) LoadTexture(file string, alpha bool, name string) (*Texture2D, error) {
+func (r *resourceManager) LoadTexture(file string, name string) (*Texture2D, error) {
 	texture := NewTexture()
 	f, err := os.Open(file)
 	if err != nil {
@@ -57,7 +61,7 @@ func (r *resourceManager) LoadTexture(file string, alpha bool, name string) (*Te
 func (r *resourceManager) Texture(name string) *Texture2D {
 	t, ok := r.textures[name]
 	if !ok {
-		panic("Texture " + name + " not found")
+		panic("Texture '" + name + "' not found")
 	}
 	return t
 }
