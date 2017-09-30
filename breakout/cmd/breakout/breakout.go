@@ -42,7 +42,6 @@ func main() {
 		panic(err)
 	}
 
-	gl.Viewport(0, 0, width, height)
 	gl.Enable(gl.CULL_FACE)
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
