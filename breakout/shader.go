@@ -49,8 +49,18 @@ func (s *Shader) SetFloat(name string, value float64) *Shader {
 	return s
 }
 
+func (s *Shader) SetVec2f(name string, value mgl32.Vec2) *Shader {
+	gl.Uniform2f(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), value.X(), value.Y())
+	return s
+}
+
 func (s *Shader) SetVec3f(name string, value mgl32.Vec3) *Shader {
 	gl.Uniform3f(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), value.X(), value.Y(), value.Z())
+	return s
+}
+
+func (s *Shader) SetVec4f(name string, value mgl32.Vec4) *Shader {
+	gl.Uniform4f(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), value.X(), value.Y(), value.Z(), value.W())
 	return s
 }
 

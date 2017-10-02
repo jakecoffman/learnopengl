@@ -5,7 +5,6 @@ import (
 	"image/draw"
 	_ "image/jpeg"
 	_ "image/png"
-
 	"io"
 
 	"github.com/go-gl/gl/v3.3-core/gl"
@@ -26,7 +25,7 @@ func NewTexture() *Texture2D {
 	gl.GenTextures(1, &ID)
 	return &Texture2D{
 		ID:             ID,
-		InternalFormat: gl.SRGB_ALPHA,
+		InternalFormat: gl.RGBA,
 		ImageFormat:    gl.RGBA,
 		WrapS:          gl.REPEAT,
 		WrapT:          gl.REPEAT,

@@ -6,6 +6,8 @@ import (
 	"github.com/go-gl/gl/v3.3-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/jakecoffman/learnopengl/breakout"
+	"fmt"
+	"time"
 )
 
 const (
@@ -51,14 +53,24 @@ func main() {
 	deltaTime := 0.5
 	lastFrame := 0.0
 
+	frames := 0
+	showFps := time.Tick(1 * time.Second)
+
 	for !window.ShouldClose() {
 		currentFrame := glfw.GetTime()
+		frames++
+		select {
+		case <-showFps:
+			window.SetTitle(fmt.Sprintf("Breakout | %d FPS", frames))
+			frames = 0
+		default:
+		}
 		deltaTime = currentFrame - lastFrame
 		lastFrame = currentFrame
 		glfw.PollEvents()
 
 		Breakout.ProcessInput(deltaTime)
-		Breakout.Update(deltaTime)
+		Breakout.Update(float32(deltaTime))
 
 		gl.ClearColor(0, 0, 0, 0.5)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
