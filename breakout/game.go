@@ -46,8 +46,8 @@ var (
 )
 
 func (g *Game) Init() {
-	ResourceManager.LoadShader("breakout/vertex.glsl", "breakout/fragment.glsl", "sprite")
-	ResourceManager.LoadShader("breakout/particle.vs.glsl", "breakout/particle.fs.glsl", "particle")
+	ResourceManager.LoadShader("breakout/shaders/main.vs.glsl", "breakout/shaders/main.fs.glsl", "sprite")
+	ResourceManager.LoadShader("breakout/shaders/particle.vs.glsl", "breakout/shaders/particle.fs.glsl", "particle")
 
 	projection := mgl32.Ortho(0, float32(g.Width), float32(g.Height), 0, -1, 1)
 	ResourceManager.Shader("sprite").
@@ -59,18 +59,18 @@ func (g *Game) Init() {
 		SetInt("sprite", 0).
 		SetMat4("projection", projection)
 
-	ResourceManager.LoadTexture("breakout/background.jpg", "background")
-	ResourceManager.LoadTexture("breakout/paddle.png", "paddle")
-	ResourceManager.LoadTexture("breakout/particle.png", "particle")
-	ResourceManager.LoadTexture("breakout/awesomeface.png", "face")
-	ResourceManager.LoadTexture("breakout/block.png", "block")
-	ResourceManager.LoadTexture("breakout/block_solid.png", "block_solid")
+	ResourceManager.LoadTexture("breakout/textures/background.jpg", "background")
+	ResourceManager.LoadTexture("breakout/textures/paddle.png", "paddle")
+	ResourceManager.LoadTexture("breakout/textures/particle.png", "particle")
+	ResourceManager.LoadTexture("breakout/textures/awesomeface.png", "face")
+	ResourceManager.LoadTexture("breakout/textures/block.png", "block")
+	ResourceManager.LoadTexture("breakout/textures/block_solid.png", "block_solid")
 
 	g.ParticleGenerator = NewParticleGenerator(ResourceManager.Shader("particle"), ResourceManager.Texture("particle"), 500)
 	g.renderer = NewSpriteRenderer(ResourceManager.Shader("sprite"))
 
 	one := NewLevel()
-	if err := one.Load("breakout/level1.txt", g.Width, int(float32(g.Height)*0.5)); err != nil {
+	if err := one.Load("breakout/levels/1.txt", g.Width, int(float32(g.Height)*0.5)); err != nil {
 		panic(err)
 	}
 	g.Levels = append(g.Levels, one)
