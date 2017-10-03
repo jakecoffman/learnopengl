@@ -12,7 +12,6 @@ import (
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
-	"log"
 )
 
 // A Font allows rendering of text to an OpenGL context.
@@ -226,7 +225,6 @@ func LoadTrueTypeFont(program uint32, r io.Reader, scale int32, low, high rune) 
 		gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 
 		char.textureID = texture
-		log.Printf("%#v\n", char)
 
 		//add char to fontChar list
 		f.fontChar = append(f.fontChar, char)
