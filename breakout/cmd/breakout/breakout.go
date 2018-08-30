@@ -1,16 +1,12 @@
 package main
 
 import (
-	"runtime"
-
 	"fmt"
-	"os"
+	"runtime"
 	"time"
 
 	"github.com/go-gl/gl/v3.3-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
-	"github.com/go-gl/mathgl/mgl32"
-	"github.com/jakecoffman/learnopengl"
 	"github.com/jakecoffman/learnopengl/breakout"
 )
 
@@ -54,19 +50,11 @@ func main() {
 
 	Breakout.Init()
 
-	shader := breakout.NewShader(fontVs, fontFs)
-	projection := mgl32.Ortho2D(0, width, height, 0)
-	shader.Use().SetMat4("projection", projection).SetInt("text", 0)
-
-	fd, err := os.Open("text/Roboto-Light.ttf")
-	if err != nil {
+	text := breakout.NewTextRenderer("breakout/shaders/text.vs.glsl", "breakout/shaders/text.fs.glsl", width, height)
+	if err = text.Load("breakout/textures/Roboto-Light.ttf", 24); err != nil {
 		panic(err)
 	}
-	font, err := learnopengl.LoadTrueTypeFont(shader.ID, fd, 50, 32, 127)
-	if err != nil {
-		panic(err)
-	}
-	fd.Close()
+	text.SetColor(1, 1, 1, 1)
 
 	deltaTime := 0.5
 	lastFrame := 0.0
@@ -94,8 +82,7 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		Breakout.Render()
-		font.SetColor(1, 1, 1, 1)
-		font.Printf(100, 100, 1, "Hello, world!")
+		text.Print("Hello, world!", 10, 25, 1)
 		window.SwapBuffers()
 	}
 
@@ -114,32 +101,3 @@ func keyCallback(window *glfw.Window, key glfw.Key, scancode int, action glfw.Ac
 		}
 	}
 }
-
-const fontVs = `
-#version 330 core
-layout (location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>
-out vec2 TexCoords;
-
-uniform mat4 projection;
-
-void main()
-{
-    gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);
-    TexCoords = vertex.zw;
-}
-`
-
-const fontFs = `
-#version 330 core
-in vec2 TexCoords;
-out vec4 color;
-
-uniform sampler2D text;
-uniform vec3 textColor;
-
-void main()
-{
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);
-    color = vec4(textColor, 1.0) * sampled;
-}
-`
