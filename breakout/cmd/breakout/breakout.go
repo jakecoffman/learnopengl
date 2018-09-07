@@ -38,7 +38,6 @@ func main() {
 	}
 	defer window.Destroy()
 	window.MakeContextCurrent()
-	window.SetKeyCallback(keyCallback)
 
 	if err := gl.Init(); err != nil {
 		panic(err)
@@ -48,13 +47,7 @@ func main() {
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
-	Breakout.Init()
-
-	text := breakout.NewTextRenderer("breakout/shaders/text.vs.glsl", "breakout/shaders/text.fs.glsl", width, height)
-	if err = text.Load("breakout/textures/Roboto-Light.ttf", 24); err != nil {
-		panic(err)
-	}
-	text.SetColor(1, 1, 1, 1)
+	Breakout.Init(window)
 
 	deltaTime := 0.5
 	lastFrame := 0.0
@@ -82,22 +75,8 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		Breakout.Render()
-		text.Print("Hello, world!", 10, 25, 1)
 		window.SwapBuffers()
 	}
 
 	breakout.ResourceManager.Clear()
-}
-
-func keyCallback(window *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
-	if key == glfw.KeyEscape && action == glfw.Press {
-		window.SetShouldClose(true)
-	}
-	if key >= 0 && key < 1024 {
-		if action == glfw.Press {
-			Breakout.Keys[key] = true
-		} else if action == glfw.Release {
-			Breakout.Keys[key] = false
-		}
-	}
 }

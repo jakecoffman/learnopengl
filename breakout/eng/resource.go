@@ -1,4 +1,4 @@
-package breakout
+package eng
 
 import (
 	"os"
@@ -12,9 +12,11 @@ type resourceManager struct {
 	textures map[string]*Texture2D
 }
 
-var ResourceManager = &resourceManager{
-	shaders: map[string]*Shader{},
-	textures: map[string]*Texture2D{},
+func NewResourceManager() *resourceManager {
+	return  &resourceManager{
+		shaders: map[string]*Shader{},
+		textures: map[string]*Texture2D{},
+	}
 }
 
 func (r *resourceManager) LoadShader(vertexPath, fragmentPath, name string) (*Shader, error) {

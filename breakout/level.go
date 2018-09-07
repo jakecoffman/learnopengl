@@ -3,6 +3,7 @@ package breakout
 import (
 	"bufio"
 	"fmt"
+	"github.com/jakecoffman/learnopengl/breakout/eng"
 	"os"
 	"strconv"
 	"strings"
@@ -52,7 +53,7 @@ func (l *Level) Load(file string, lvlWidth, lvlHeight int) error {
 	return nil
 }
 
-func (l *Level) Draw(renderer *SpriteRenderer) {
+func (l *Level) Draw(renderer *eng.SpriteRenderer) {
 	for _, tile := range l.Bricks {
 		if !tile.Destroyed {
 			tile.Draw(renderer)

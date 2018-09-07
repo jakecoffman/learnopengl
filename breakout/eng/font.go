@@ -1,4 +1,4 @@
-package breakout
+package eng
 
 import (
 	"fmt"
@@ -31,12 +31,8 @@ type character struct {
 	bearingV  int    //glyph bearing vertical
 }
 
-func NewTextRenderer(vertex, fragment string, width, height float32) *TextRenderer {
-	shader, err := ResourceManager.LoadShader(vertex, fragment, "text")
+func NewTextRenderer(shader *Shader, width, height float32, font string, scale uint32) *TextRenderer {
 	shader.Use().SetMat4("projection", mgl32.Ortho2D(0, width, height, 0)).SetInt("text", 0)
-	if err != nil {
-		panic(err)
-	}
 	var VAO, VBO uint32
 	gl.GenVertexArrays(1, &VAO)
 	gl.GenBuffers(1, &VBO)
@@ -48,11 +44,15 @@ func NewTextRenderer(vertex, fragment string, width, height float32) *TextRender
 	gl.VertexAttribPointer(0, 4, gl.FLOAT, false, 4*4, gl.PtrOffset(0))
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 	gl.BindVertexArray(0)
-	return &TextRenderer{
+	r := &TextRenderer{
 		vao:    VAO,
 		vbo:    VBO,
 		shader: shader,
 	}
+	if err := r.Load(font, scale); err != nil {
+		panic(err)
+	}
+	return r
 }
 
 func (t *TextRenderer) Load(fontPath string, scale uint32) error {

@@ -1,4 +1,4 @@
-package breakout
+package eng
 
 import (
 	"math/rand"
@@ -63,10 +63,10 @@ func NewParticleGenerator(shader *Shader, texture *Texture2D, amount int) *Parti
 	return particleGenerator
 }
 
-func (p *ParticleGenerator) Update(dt float32, object *Object, newParticles int, offset mgl32.Vec2) {
+func (p *ParticleGenerator) Update(dt float32, position, velocity mgl32.Vec2, newParticles int, offset mgl32.Vec2) {
 	for i := 0; i < newParticles; i++ {
 		unusedParticles := p.firstUnusedParticle()
-		p.respawnParticle(p.particles[unusedParticles], object, offset)
+		p.respawnParticle(p.particles[unusedParticles], position, velocity, offset)
 	}
 	for i := 0; i < p.Amount; i++ {
 		p := p.particles[i]
@@ -111,11 +111,11 @@ func (p *ParticleGenerator) firstUnusedParticle() int {
 	return 0
 }
 
-func (p *ParticleGenerator) respawnParticle(particle *Particle, object *Object, offset mgl32.Vec2) {
+func (p *ParticleGenerator) respawnParticle(particle *Particle, position, velocity mgl32.Vec2, offset mgl32.Vec2) {
 	random := (float32(rand.Intn(100)) - 50.0) / 10.0
 	rColor := 0.5 + (float32(rand.Intn(100)) / 100.0)
-	particle.Position = object.Position.Add(mgl32.Vec2{offset.X() + random, offset.Y() + random})
+	particle.Position = position.Add(mgl32.Vec2{offset.X() + random, offset.Y() + random})
 	particle.Color = mgl32.Vec4{rColor, rColor, rColor, 1}
 	particle.Life = 1
-	particle.Velocity = object.Velocity.Mul(0.1)
+	particle.Velocity = velocity.Mul(0.1)
 }

@@ -1,11 +1,14 @@
 package breakout
 
 import (
+	"github.com/jakecoffman/learnopengl/breakout/eng"
 	"math"
 
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 )
+
+var ResourceManager = eng.NewResourceManager()
 
 type Game struct {
 	state         int
@@ -18,9 +21,9 @@ type Game struct {
 	Player *Object
 	Ball   *Ball
 
-	ParticleGenerator *ParticleGenerator
-
-	renderer *SpriteRenderer
+	ParticleGenerator *eng.ParticleGenerator
+	SpriteRenderer    *eng.SpriteRenderer
+	TextRenderer      *eng.TextRenderer
 }
 
 // Game state
@@ -45,11 +48,26 @@ var (
 	BALL_RADIUS           float32 = 12.5
 )
 
-func (g *Game) Init() {
+func (g *Game) Init(window *glfw.Window) {
+	window.SetKeyCallback(func(window *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
+		if key == glfw.KeyEscape && action == glfw.Press {
+			window.SetShouldClose(true)
+		}
+		if key >= 0 && key < 1024 {
+			if action == glfw.Press {
+				g.Keys[key] = true
+			} else if action == glfw.Release {
+				g.Keys[key] = false
+			}
+		}
+	})
+
+	width, height := float32(g.Width), float32(g.Height)
+
 	ResourceManager.LoadShader("breakout/shaders/main.vs.glsl", "breakout/shaders/main.fs.glsl", "sprite")
 	ResourceManager.LoadShader("breakout/shaders/particle.vs.glsl", "breakout/shaders/particle.fs.glsl", "particle")
 
-	projection := mgl32.Ortho(0, float32(g.Width), float32(g.Height), 0, -1, 1)
+	projection := mgl32.Ortho(0, width, height, 0, -1, 1)
 	ResourceManager.Shader("sprite").
 		Use().
 		SetInt("sprite", 0).
@@ -66,8 +84,12 @@ func (g *Game) Init() {
 	ResourceManager.LoadTexture("breakout/textures/block.png", "block")
 	ResourceManager.LoadTexture("breakout/textures/block_solid.png", "block_solid")
 
-	g.ParticleGenerator = NewParticleGenerator(ResourceManager.Shader("particle"), ResourceManager.Texture("particle"), 500)
-	g.renderer = NewSpriteRenderer(ResourceManager.Shader("sprite"))
+	shader, _ := ResourceManager.LoadShader("breakout/shaders/text.vs.glsl", "breakout/shaders/text.fs.glsl", "text")
+	g.TextRenderer = eng.NewTextRenderer(shader, width, height, "breakout/textures/Roboto-Light.ttf", 24)
+	g.TextRenderer.SetColor(1, 1, 1, 1)
+
+	g.ParticleGenerator = eng.NewParticleGenerator(ResourceManager.Shader("particle"), ResourceManager.Texture("particle"), 500)
+	g.SpriteRenderer = eng.NewSpriteRenderer(ResourceManager.Shader("sprite"))
 
 	one := NewLevel()
 	if err := one.Load("breakout/levels/1.txt", g.Width, int(float32(g.Height)*0.5)); err != nil {
@@ -115,7 +137,8 @@ func (g *Game) ProcessInput(dt float64) {
 func (g *Game) Update(dt float32) {
 	g.Ball.Move(dt, float32(g.Width))
 	g.DoCollisions()
-	g.ParticleGenerator.Update(dt, g.Ball.Object, 2, mgl32.Vec2{g.Ball.Radius / 2, g.Ball.Radius / 2})
+	ball := g.Ball.Object
+	g.ParticleGenerator.Update(dt, ball.Position, ball.Velocity, 2, mgl32.Vec2{g.Ball.Radius / 2, g.Ball.Radius / 2})
 	if g.Ball.Position.Y() >= float32(g.Height) {
 		g.ResetLevel()
 		g.ResetPlayer()
@@ -124,12 +147,13 @@ func (g *Game) Update(dt float32) {
 
 func (g *Game) Render() {
 	if g.state == GAME_ACTIVE {
-		g.renderer.DrawSprite(ResourceManager.Texture("background"), Vec2(0, 0), Vec2(g.Width, g.Height), 0, DefaultColor)
-		g.Levels[g.Level].Draw(g.renderer)
-		g.Player.Draw(g.renderer)
+		g.SpriteRenderer.DrawSprite(ResourceManager.Texture("background"), Vec2(0, 0), Vec2(g.Width, g.Height), 0, eng.DefaultColor)
+		g.Levels[g.Level].Draw(g.SpriteRenderer)
+		g.Player.Draw(g.SpriteRenderer)
 		g.ParticleGenerator.Draw()
-		g.Ball.Draw(g.renderer)
+		g.Ball.Draw(g.SpriteRenderer)
 	}
+	g.TextRenderer.Print("Hello, world!", 10, 25, 1)
 }
 
 func (g *Game) Pause() {
