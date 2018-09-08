@@ -13,11 +13,14 @@ import (
 
 type Level struct {
 	Bricks []*Object
+	block, solid *eng.Texture2D
 }
 
-func NewLevel() *Level {
+func NewLevel(block, solid *eng.Texture2D) *Level {
 	return &Level{
 		Bricks: []*Object{},
+		block: block,
+		solid: solid,
 	}
 }
 
@@ -30,11 +33,11 @@ func (l *Level) Load(file string, lvlWidth, lvlHeight int) error {
 	}
 	defer f.Close()
 
-	tileData := [][]int{}
+	var tileData [][]int
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		parts := strings.Split(scanner.Text(), " ")
-		row := []int{}
+		var row []int
 		for _, part := range parts {
 			i, err := strconv.Atoi(part)
 			if err != nil {
@@ -81,7 +84,7 @@ func (l *Level) init(tileData [][]int, lvlWidth, lvlHeight int) error {
 			if tileData[y][x] == 1 {
 				pos := Vec2(unitWidth*x, unitHeight*y)
 				size := Vec2(unitWidth, unitHeight)
-				obj := NewGameObject(pos, size, ResourceManager.Texture("block_solid"))
+				obj := NewGameObject(pos, size, l.solid)
 				obj.Color = mgl32.Vec3{.8, .8, .7}
 				obj.IsSolid = true
 				l.Bricks = append(l.Bricks, obj)
@@ -100,7 +103,7 @@ func (l *Level) init(tileData [][]int, lvlWidth, lvlHeight int) error {
 
 				pos := Vec2(unitWidth*x, unitHeight*y)
 				size := Vec2(unitWidth, unitHeight)
-				obj := NewGameObject(pos, size, ResourceManager.Texture("block"))
+				obj := NewGameObject(pos, size, l.block)
 				obj.Color = color
 				l.Bricks = append(l.Bricks, obj)
 			}

@@ -1,25 +1,25 @@
 package eng
 
 import (
-	"os"
-	"io/ioutil"
 	"github.com/go-gl/gl/v3.3-core/gl"
+	"io/ioutil"
+	"os"
 )
 
 // Singleton
-type resourceManager struct {
+type ResourceManager struct {
 	shaders map[string]*Shader
 	textures map[string]*Texture2D
 }
 
-func NewResourceManager() *resourceManager {
-	return  &resourceManager{
+func NewResourceManager() *ResourceManager {
+	return  &ResourceManager{
 		shaders: map[string]*Shader{},
 		textures: map[string]*Texture2D{},
 	}
 }
 
-func (r *resourceManager) LoadShader(vertexPath, fragmentPath, name string) (*Shader, error) {
+func (r *ResourceManager) LoadShader(vertexPath, fragmentPath, name string) (*Shader, error) {
 	var vertexCode, fragmentCode string
 
 	{
@@ -41,7 +41,7 @@ func (r *resourceManager) LoadShader(vertexPath, fragmentPath, name string) (*Sh
 	return shader, nil
 }
 
-func (r *resourceManager) Shader(name string) *Shader {
+func (r *ResourceManager) Shader(name string) *Shader {
 	shader, ok := r.shaders[name]
 	if !ok {
 		panic("Shader not found")
@@ -49,7 +49,7 @@ func (r *resourceManager) Shader(name string) *Shader {
 	return shader
 }
 
-func (r *resourceManager) LoadTexture(file string, name string) (*Texture2D, error) {
+func (r *ResourceManager) LoadTexture(file string, name string) (*Texture2D, error) {
 	texture := NewTexture()
 	f, err := os.Open(file)
 	if err != nil {
@@ -60,7 +60,7 @@ func (r *resourceManager) LoadTexture(file string, name string) (*Texture2D, err
 	return texture, nil
 }
 
-func (r *resourceManager) Texture(name string) *Texture2D {
+func (r *ResourceManager) Texture(name string) *Texture2D {
 	t, ok := r.textures[name]
 	if !ok {
 		panic("Texture '" + name + "' not found")
@@ -68,7 +68,7 @@ func (r *resourceManager) Texture(name string) *Texture2D {
 	return t
 }
 
-func (r *resourceManager) Clear() {
+func (r *ResourceManager) Clear() {
 	for _, shader := range r.shaders {
 		gl.DeleteProgram(shader.ID)
 	}

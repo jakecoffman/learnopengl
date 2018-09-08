@@ -22,7 +22,7 @@ func NewBall(pos mgl32.Vec2, radius float32, velocity mgl32.Vec2, sprite *eng.Te
 	return ball
 }
 
-func (b *Ball) Move(dt float32, windowWidth float32) mgl32.Vec2 {
+func (b *Ball) Move(dt, windowWidth float32) mgl32.Vec2 {
 	if b.Stuck {
 		return b.Position
 	}
