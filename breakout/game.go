@@ -61,10 +61,10 @@ func (g *Game) New(w, h int, window *glfw.Window) {
 	g.LoadTexture("breakout/textures/paddle.png", "paddle")
 	g.LoadTexture("breakout/textures/particle.png", "particle")
 	g.LoadTexture("breakout/textures/awesomeface.png", "face")
-	block, _ := g.LoadTexture("breakout/textures/block.png", "block")
-	solid, _ := g.LoadTexture("breakout/textures/block_solid.png", "block_solid")
+	block := g.LoadTexture("breakout/textures/block.png", "block")
+	solid := g.LoadTexture("breakout/textures/block_solid.png", "block_solid")
 
-	shader, _ := g.LoadShader("breakout/shaders/text.vs.glsl", "breakout/shaders/text.fs.glsl", "text")
+	shader := g.LoadShader("breakout/shaders/text.vs.glsl", "breakout/shaders/text.fs.glsl", "text")
 	g.TextRenderer = eng.NewTextRenderer(shader, width, height, "breakout/textures/Roboto-Light.ttf", 24)
 	g.TextRenderer.SetColor(1, 1, 1, 1)
 
@@ -72,15 +72,13 @@ func (g *Game) New(w, h int, window *glfw.Window) {
 	g.SpriteRenderer = eng.NewSpriteRenderer(g.Shader("sprite"))
 
 	one := NewLevel(block, solid)
-	if err := one.Load("breakout/levels/1.txt", g.Width, int(float32(g.Height)*0.5)); err != nil {
-		panic(err)
-	}
+	one.Load("breakout/levels/1.txt", g.Width, int(float32(g.Height)*0.5))
 	g.Levels = append(g.Levels, one)
 
 	playerPos := mgl32.Vec2{float32(g.Width)/2.0 - playerSize.X()/2.0, float32(g.Height) - playerSize.Y()}
 	g.Player = NewGameObject(playerPos, playerSize, g.Texture("paddle"))
 
-	ballPos := playerPos.Add(mgl32.Vec2{playerSize.X()/2.0 - float32(ballRadius), float32(-ballRadius * 2)})
+	ballPos := playerPos.Add(mgl32.Vec2{playerSize.X()/2.0 - ballRadius, -ballRadius * 2})
 	g.Ball = NewBall(ballPos, ballRadius, initialBallVelocity, g.Texture("face"))
 
 	g.state = stateActive
@@ -131,7 +129,7 @@ func (g *Game) processInput(dt float32) {
 		return
 	}
 
-	velocity := float32(playerVelocity * dt)
+	velocity := playerVelocity * dt
 
 	if g.Keys[glfw.KeyA] {
 		if g.Player.Position.X() >= 0 {
@@ -164,7 +162,7 @@ func (g *Game) unpause() {
 
 func (g *Game) resetLevel() {
 	if g.Level == 0 {
-		g.Levels[0].Load("breakout/level1.txt", g.Width, int(float32(g.Height)*0.5))
+		g.Levels[0].Load("breakout/levels/1.txt", g.Width, int(float32(g.Height)*0.5))
 	}
 	// TODO
 }

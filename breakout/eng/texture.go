@@ -34,11 +34,11 @@ func NewTexture() *Texture2D {
 	}
 }
 
-func (t *Texture2D) Generate(reader io.ReadCloser) error {
+func (t *Texture2D) Generate(reader io.ReadCloser) {
 	defer reader.Close()
 	img, _, err := image.Decode(reader)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	rgba := image.NewRGBA(img.Bounds())
@@ -59,7 +59,7 @@ func (t *Texture2D) Generate(reader io.ReadCloser) error {
 	// unbind
 	gl.BindTexture(gl.TEXTURE_2D, 0)
 
-	return nil
+	return
 }
 
 func (t *Texture2D) Bind() {

@@ -20,7 +20,9 @@ func Run(scene Scene, width, height int) {
 	runtime.LockOSThread()
 
 	// glfw: initialize and configure
-	glfw.Init()
+	if err := glfw.Init(); err != nil {
+		panic(err)
+	}
 	defer glfw.Terminate()
 	glfw.WindowHint(glfw.ContextVersionMajor, 3)
 	glfw.WindowHint(glfw.ContextVersionMinor, 3)
