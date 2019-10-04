@@ -19,26 +19,26 @@ func NewResourceManager() *ResourceManager {
 	}
 }
 
-func (r *ResourceManager) LoadShader(vertexPath, fragmentPath, name string) (*Shader, error) {
+func (r *ResourceManager) LoadShader(vertexPath, fragmentPath, name string) *Shader {
 	var vertexCode, fragmentCode string
 
 	{
 		bytes, err := ioutil.ReadFile(vertexPath)
 		if err != nil {
-			return nil, err
+			panic(err)
 		}
 		vertexCode = string(bytes)
 
 		bytes, err = ioutil.ReadFile(fragmentPath)
 		if err != nil {
-			return nil, err
+			panic(err)
 		}
 		fragmentCode = string(bytes)
 	}
 
 	shader := NewShader(vertexCode, fragmentCode)
 	r.shaders[name] = shader
-	return shader, nil
+	return shader
 }
 
 func (r *ResourceManager) Shader(name string) *Shader {
@@ -49,15 +49,15 @@ func (r *ResourceManager) Shader(name string) *Shader {
 	return shader
 }
 
-func (r *ResourceManager) LoadTexture(file string, name string) (*Texture2D, error) {
+func (r *ResourceManager) LoadTexture(file string, name string) *Texture2D {
 	texture := NewTexture()
 	f, err := os.Open(file)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	texture.Generate(f)
 	r.textures[name] = texture
-	return texture, nil
+	return texture
 }
 
 func (r *ResourceManager) Texture(name string) *Texture2D {

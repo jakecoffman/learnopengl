@@ -14,7 +14,7 @@ type Ball struct {
 
 func NewBall(pos mgl32.Vec2, radius float32, velocity mgl32.Vec2, sprite *eng.Texture2D) *Ball {
 	ball := &Ball{}
-	ball.Object = NewGameObject(pos, mgl32.Vec2{float32(radius*2), float32(radius*2)}, sprite)
+	ball.Object = NewGameObject(pos, mgl32.Vec2{radius * 2, radius * 2}, sprite)
 	ball.Color = mgl32.Vec3{1, 1, 1}
 	ball.Velocity = velocity
 	ball.Radius = radius

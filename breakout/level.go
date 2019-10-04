@@ -24,12 +24,12 @@ func NewLevel(block, solid *eng.Texture2D) *Level {
 	}
 }
 
-func (l *Level) Load(file string, lvlWidth, lvlHeight int) error {
+func (l *Level) Load(file string, lvlWidth, lvlHeight int) {
 	l.Bricks = l.Bricks[:0]
 
 	f, err := os.Open(file)
 	if err != nil {
-		return err
+		panic(err)
 	}
 	defer f.Close()
 
@@ -41,19 +41,19 @@ func (l *Level) Load(file string, lvlWidth, lvlHeight int) error {
 		for _, part := range parts {
 			i, err := strconv.Atoi(part)
 			if err != nil {
-				return fmt.Errorf("Failed to parse level: %s", err.Error())
+				panic(fmt.Errorf("failed to parse level: %s", err.Error()))
 			}
 			row = append(row, i)
 		}
 		tileData = append(tileData, row)
 	}
 	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("Failed to scan file: %s", err)
+		panic(fmt.Errorf("failed to scan file: %s", err))
 	}
 	if len(tileData) > 0 {
-		return l.init(tileData, lvlWidth, lvlHeight)
+		l.init(tileData, lvlWidth, lvlHeight)
 	}
-	return nil
+	return
 }
 
 func (l *Level) Draw(renderer *eng.SpriteRenderer) {
@@ -73,7 +73,7 @@ func (l *Level) IsCompleted() bool {
 	return true
 }
 
-func (l *Level) init(tileData [][]int, lvlWidth, lvlHeight int) error {
+func (l *Level) init(tileData [][]int, lvlWidth, lvlHeight int) {
 	height := len(tileData)
 	width := len(tileData[0])
 	unitWidth := lvlWidth / width
@@ -110,7 +110,7 @@ func (l *Level) init(tileData [][]int, lvlWidth, lvlHeight int) error {
 		}
 	}
 
-	return nil
+	return
 }
 
 func Vec2(x, y int) mgl32.Vec2 {

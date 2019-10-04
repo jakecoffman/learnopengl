@@ -1,8 +1,7 @@
 package eng
 
 import (
-	"fmt"
-	"os"
+	"log"
 	"strings"
 
 	"github.com/go-gl/gl/v3.3-core/gl"
@@ -96,10 +95,10 @@ func CheckError(obj uint32, status uint32, getiv func(uint32, uint32, *int32), g
 		var length int32
 		getiv(obj, gl.INFO_LOG_LENGTH, &length)
 
-		log := strings.Repeat("\x00", int(length+1))
-		getInfoLog(obj, length, nil, gl.Str(log))
+		info := strings.Repeat("\x00", int(length+1))
+		getInfoLog(obj, length, nil, gl.Str(info))
 
-		fmt.Fprintln(os.Stderr, "GL Error:", log)
+		log.Println("GL Error:", info)
 		return true
 	}
 
@@ -137,7 +136,7 @@ func LinkProgram(vshader, fshader uint32) uint32 {
 }
 
 func SetAttribute(program uint32, name string, size int32, gltype uint32, stride int32, offset int) {
-	var index uint32 = uint32(gl.GetAttribLocation(program, gl.Str(name+"\x00")))
+	var index = uint32(gl.GetAttribLocation(program, gl.Str(name+"\x00")))
 	gl.EnableVertexAttribArray(index)
 	gl.VertexAttribPointer(index, size, gltype, false, stride, gl.PtrOffset(offset))
 	CheckGLErrors()
