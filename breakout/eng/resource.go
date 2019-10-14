@@ -1,9 +1,10 @@
 package eng
 
 import (
-	"github.com/go-gl/gl/v3.3-core/gl"
 	"io/ioutil"
 	"os"
+
+	"github.com/go-gl/gl/v3.3-core/gl"
 )
 
 // Singleton

@@ -3,11 +3,10 @@ package breakout
 import (
 	"bufio"
 	"fmt"
-	"github.com/jakecoffman/learnopengl/breakout/eng"
 	"os"
 	"strconv"
 	"strings"
-
+	"github.com/jakecoffman/learnopengl/breakout/eng"
 	"github.com/go-gl/mathgl/mgl32"
 )
 
@@ -59,7 +58,7 @@ func (l *Level) Load(file string, lvlWidth, lvlHeight int) {
 func (l *Level) Draw(renderer *eng.SpriteRenderer) {
 	for _, tile := range l.Bricks {
 		if !tile.Destroyed {
-			tile.Draw(renderer)
+			tile.Draw(renderer, nil, 0)
 		}
 	}
 }

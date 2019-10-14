@@ -1,22 +1,28 @@
 package breakout
 
 import (
+	"math"
+
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/jakecoffman/learnopengl/breakout/eng"
-	"math"
 )
 
 type Game struct {
 	state         int
 	Keys          [1024]bool
 	Width, Height int
+	vsync         int
 
 	Levels []*Level
 	Level  int
 
 	Player *Object
 	Ball   *Ball
+
+	// used for slerp
+	LastPlayerPosition mgl32.Vec2
+	LastBallPosition   mgl32.Vec2
 
 	*eng.ResourceManager
 	ParticleGenerator *eng.ParticleGenerator
@@ -39,9 +45,9 @@ var (
 )
 
 func (g *Game) New(w, h int, window *glfw.Window) {
-	g.Width =  w
+	g.Width = w
 	g.Height = h
-	g.Keys =[1024]bool{}
+	g.Keys = [1024]bool{}
 	g.ResourceManager = eng.NewResourceManager()
 
 	width, height := float32(g.Width), float32(g.Height)
@@ -98,6 +104,9 @@ func (g *Game) New(w, h int, window *glfw.Window) {
 }
 
 func (g *Game) Update(dt float32) {
+	g.LastBallPosition = g.Ball.Position
+	g.LastPlayerPosition = g.Player.Position
+
 	g.processInput(dt)
 	g.Ball.Move(dt, float32(g.Width))
 	g.doCollisions()
@@ -109,13 +118,13 @@ func (g *Game) Update(dt float32) {
 	}
 }
 
-func (g *Game) Render() {
+func (g *Game) Render(alpha float32) {
 	if g.state == stateActive {
 		g.SpriteRenderer.DrawSprite(g.Texture("background"), Vec2(0, 0), Vec2(g.Width, g.Height), 0, eng.DefaultColor)
 		g.Levels[g.Level].Draw(g.SpriteRenderer)
-		g.Player.Draw(g.SpriteRenderer)
+		g.Player.Draw(g.SpriteRenderer, &g.LastPlayerPosition, alpha)
 		g.ParticleGenerator.Draw()
-		g.Ball.Draw(g.SpriteRenderer)
+		g.Ball.Draw(g.SpriteRenderer, &g.LastBallPosition, alpha)
 	}
 	g.TextRenderer.Print("Hello, world!", 10, 25, 1)
 }
@@ -149,6 +158,14 @@ func (g *Game) processInput(dt float32) {
 	}
 	if g.Keys[glfw.KeySpace] {
 		g.Ball.Stuck = false
+	}
+	if g.Keys[glfw.KeyV] {
+		if g.vsync == 0 {
+			g.vsync = 1
+		} else {
+			g.vsync = 0
+		}
+		glfw.SwapInterval(g.vsync)
 	}
 }
 
