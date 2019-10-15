@@ -26,6 +26,7 @@ func Run(scene Scene, width, height int) {
 	glfw.WindowHint(glfw.ContextVersionMajor, 3)
 	glfw.WindowHint(glfw.ContextVersionMinor, 3)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
+	glfw.WindowHint(glfw.Decorated, glfw.False)
 
 	if runtime.GOOS == "darwin" {
 		glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
@@ -42,7 +43,7 @@ func Run(scene Scene, width, height int) {
 	if err := gl.Init(); err != nil {
 		panic(err)
 	}
-	glfw.SwapInterval(0)
+	glfw.SwapInterval(1)
 
 	gl.Enable(gl.CULL_FACE)
 	gl.Enable(gl.BLEND)

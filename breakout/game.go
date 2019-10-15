@@ -41,10 +41,11 @@ var (
 	playerSize          = mgl32.Vec2{100, 20}
 	playerVelocity      = float32(500.0)
 	initialBallVelocity = Vec2(100, -350)
-	ballRadius          = float32(12.5)
+	ballRadius          = float32(50)
 )
 
 func (g *Game) New(w, h int, window *glfw.Window) {
+	g.vsync = 1
 	g.Width = w
 	g.Height = h
 	g.Keys = [1024]bool{}
@@ -103,7 +104,6 @@ func (g *Game) New(w, h int, window *glfw.Window) {
 				g.vsync = 0
 			}
 			glfw.SwapInterval(g.vsync)
-
 		}
 		// store for continuous application
 		if key >= 0 && key < 1024 {
@@ -153,7 +153,7 @@ func (g *Game) processInput(dt float32) {
 
 	velocity := playerVelocity * dt
 
-	if g.Keys[glfw.KeyA] {
+	if g.Keys[glfw.KeyA] || g.Keys[glfw.KeyLeft] {
 		if g.Player.Position.X() >= 0 {
 			g.Player.Position = mgl32.Vec2{g.Player.Position.X() - velocity, g.Player.Position.Y()}
 			if g.Ball.Stuck {
@@ -161,7 +161,7 @@ func (g *Game) processInput(dt float32) {
 			}
 		}
 	}
-	if g.Keys[glfw.KeyD] {
+	if g.Keys[glfw.KeyD] || g.Keys[glfw.KeyRight] {
 		if g.Player.Position.X() <= float32(g.Width)-g.Player.Size.X() {
 			g.Player.Position = mgl32.Vec2{g.Player.Position.X() + velocity, g.Player.Position.Y()}
 			if g.Ball.Stuck {
