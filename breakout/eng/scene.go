@@ -26,14 +26,14 @@ func Run(scene Scene, width, height int) {
 	glfw.WindowHint(glfw.ContextVersionMajor, 3)
 	glfw.WindowHint(glfw.ContextVersionMinor, 3)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
-	glfw.WindowHint(glfw.Decorated, glfw.False)
 
 	if runtime.GOOS == "darwin" {
 		glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 	}
 
 	// glfw window creation
-	window, err := glfw.CreateWindow(width, height, "Breakout", nil, nil)
+	monitor := glfw.GetPrimaryMonitor()
+	window, err := glfw.CreateWindow(width, height, "Breakout", monitor, nil)
 	if err != nil {
 		panic(err)
 	}
