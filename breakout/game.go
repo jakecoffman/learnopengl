@@ -93,6 +93,19 @@ func (g *Game) New(w, h int, window *glfw.Window) {
 		if key == glfw.KeyEscape && action == glfw.Press {
 			window.SetShouldClose(true)
 		}
+		if g.Keys[glfw.KeySpace] {
+			g.Ball.Stuck = false
+		}
+		if g.Keys[glfw.KeyV] {
+			if g.vsync == 0 {
+				g.vsync = 1
+			} else {
+				g.vsync = 0
+			}
+			glfw.SwapInterval(g.vsync)
+
+		}
+		// store for continuous application
 		if key >= 0 && key < 1024 {
 			if action == glfw.Press {
 				g.Keys[key] = true
@@ -155,17 +168,6 @@ func (g *Game) processInput(dt float32) {
 				g.Ball.Position = mgl32.Vec2{g.Ball.Position.X() + velocity, g.Ball.Position.Y()}
 			}
 		}
-	}
-	if g.Keys[glfw.KeySpace] {
-		g.Ball.Stuck = false
-	}
-	if g.Keys[glfw.KeyV] {
-		if g.vsync == 0 {
-			g.vsync = 1
-		} else {
-			g.vsync = 0
-		}
-		glfw.SwapInterval(g.vsync)
 	}
 }
 
