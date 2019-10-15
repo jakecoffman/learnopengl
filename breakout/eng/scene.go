@@ -33,7 +33,8 @@ func Run(scene Scene, width, height int) {
 
 	// glfw window creation
 	monitor := glfw.GetPrimaryMonitor()
-	window, err := glfw.CreateWindow(width, height, "Breakout", monitor, nil)
+	videoMode := monitor.GetVideoMode()
+	window, err := glfw.CreateWindow(videoMode.Width, videoMode.Height, "Breakout", monitor, nil)
 	if err != nil {
 		panic(err)
 	}

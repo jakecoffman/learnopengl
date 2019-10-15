@@ -41,7 +41,7 @@ var (
 	playerSize          = mgl32.Vec2{100, 20}
 	playerVelocity      = float32(500.0)
 	initialBallVelocity = Vec2(100, -350)
-	ballRadius          = float32(50)
+	ballRadius          = float32(25)
 )
 
 func (g *Game) New(w, h int, window *glfw.Window) {
